@@ -1,6 +1,6 @@
-import { Schema } from "mongoose";
+import { Types } from "mongoose";
 import { IBangladeshDivision, IBreed } from "./cow.constant";
-type ObjectId = Schema.Types.ObjectId;
+import { IUser } from "../user/user.interface";
 export type ICow = {
   name: string;
   age: number;
@@ -10,7 +10,7 @@ export type ICow = {
   weight: number;
   label: "for-sale" | "sold-out";
   category: "dairy" | "beef" | "dualPurpose ";
-  seller: ObjectId;
+  seller: Types.ObjectId | IUser;
 };
 
 export type IPaginationOptions = {
@@ -21,6 +21,8 @@ export type IPaginationOptions = {
 };
 export type ICowFilter = {
   searchTerm?: string;
+  maxPrice?: number;
+  minPrice?: number;
 };
 
 export type IGenereicResponse<T> = {

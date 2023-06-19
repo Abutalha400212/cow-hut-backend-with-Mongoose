@@ -12,7 +12,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 // Application routes
 app.use("/api/v1/auth/", UserRoute);
-app.use("/api/v1/", CowRoute);
+app.use("/api/v1/cows", CowRoute);
 
 // Global Error Handlere
 app.use(globalErrorHandler);

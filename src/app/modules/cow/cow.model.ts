@@ -39,11 +39,7 @@ const cowSchema = new Schema<ICow>({
     required: true,
     enum: ["dairy", "beef", "dualPurpose"],
   },
-  seller: {
-    type: mongoose.Types.ObjectId,
-    required: true,
-    ref: "User",
-  },
+  seller: { type: Schema.Types.ObjectId, ref: "User" },
 });
 
 export const Cow = model<ICow>("Cow", cowSchema);

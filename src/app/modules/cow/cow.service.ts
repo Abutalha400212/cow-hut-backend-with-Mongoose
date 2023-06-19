@@ -1,4 +1,4 @@
-import { SortOrder } from "mongoose";
+import { ObjectId, SortOrder } from "mongoose";
 import { PaginationHelper } from "../../../helpers/paginationHelpers";
 import {
   ICow,
@@ -7,6 +7,7 @@ import {
   IPaginationOptions,
 } from "./cow.interface";
 import { Cow } from "./cow.model";
+import { FilteringHelper } from "../../../helpers/filteringHelpers";
 
 const addCow = async (payload: ICow) => {
   const addedCow = await Cow.create(payload);
@@ -16,37 +17,28 @@ const addCow = async (payload: ICow) => {
   }
   return addedCow;
 };
-
 const getAllCow = async (
   filters: ICowFilter,
   paginationOtions: IPaginationOptions
 ): Promise<IGenereicResponse<ICow[]>> => {
-  const { searchTerm } = filters;
   const { page, limit, sortBy, sortOrder } =
     PaginationHelper.createPagination(paginationOtions);
   const skip = (page - 1) * limit;
   const sortCondition: { [key: string]: SortOrder } = {};
-  const andConditions = [];
-  const academicSemesterSearchableFields = ["location", "greed", "category"];
-  if (searchTerm) {
-    andConditions.push({
-      $or: academicSemesterSearchableFields.map((field) => ({
-        [field]: {
-          $regex: searchTerm,
-          $options: "i",
-        },
-      })),
-    });
-  }
-
+  const andConditions = FilteringHelper.filteringHelpers(filters);
   if (sortBy && sortOrder) {
     sortCondition[sortBy] = sortOrder;
   }
-  const result = await Cow.find({ $and: andConditions })
-    .sort(sortCondition)
-    .skip(skip)
-    .limit(limit);
-  const total = await Cow.countDocuments();
+  let result: ICow[] = [];
+  if (!Object.keys(filters).length) {
+    result = await Cow.find().sort(sortCondition).skip(skip).limit(limit);
+  } else {
+    result = await Cow.find({ $and: andConditions })
+      .sort(sortCondition)
+      .skip(skip)
+      .limit(limit);
+  }
+  const total = await Cow.estimatedDocumentCount();
   return {
     meta: {
       page,
@@ -56,7 +48,23 @@ const getAllCow = async (
     data: result,
   };
 };
+
+const getSingleCow = async (id: string) => {
+  const result = await Cow.findOne({ _id: id }).populate("seller");
+  return result;
+};
+const deleteSingleCow = async (id: string) => {
+  const result = await Cow.deleteOne({ _id: id });
+  return result;
+};
+const updateSingleCow = async (id: string, update: ICow) => {
+  const result = await Cow.updateOne({ _id: id }, update);
+  return result;
+};
 export const CowService = {
   addCow,
   getAllCow,
+  getSingleCow,
+  deleteSingleCow,
+  updateSingleCow,
 };
