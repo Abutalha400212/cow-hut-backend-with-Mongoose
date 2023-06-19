@@ -4,6 +4,7 @@ import httpStatus from "http-status";
 import { UserRoute } from "./app/modules/user/user.route";
 import globalErrorHandler from "./middleware/globalErrorHandler";
 import { CowRoute } from "./app/modules/cow/cow.route";
+import { OrderRoute } from "./app/modules/order/order.route";
 const app: Application = express();
 app.use(cors());
 
@@ -11,8 +12,9 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 // Application routes
-app.use("/api/v1/auth/", UserRoute);
+app.use("/api/v1/", UserRoute);
 app.use("/api/v1/cows", CowRoute);
+app.use("/api/v1/orders", OrderRoute);
 
 // Global Error Handlere
 app.use(globalErrorHandler);

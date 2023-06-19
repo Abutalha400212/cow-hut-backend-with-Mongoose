@@ -4,8 +4,9 @@ const router = express.Router();
 
 router.post("/", CowController.addCow).get("/", CowController.getAllCow);
 router
-  .get("/:id", CowController.getSingleCow)
-  .delete("/:id", CowController.deleteSingleCow)
-  .patch("/:id", CowController.updateSingleCow);
+  .route("/:id")
+  .get(CowController.getSingleCow)
+  .delete(CowController.deleteSingleCow)
+  .patch(CowController.updateSingleCow);
 
 export const CowRoute = router;

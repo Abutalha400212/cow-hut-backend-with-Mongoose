@@ -1,24 +1,32 @@
-import ApiError from "../../../errors/apiError";
 import { IUser } from "./user.interface";
 import { User } from "./user.model";
-import httpStatus from "http-status";
 const createUser = async (payload: IUser): Promise<IUser | null> => {
-  if (payload.role === "seller" && payload.budget > 0) {
-    throw new ApiError(httpStatus.CONFLICT, "Can't have a budget as seller");
-  }
-  if (payload.role === "buyer" && payload.income > 0) {
-    throw new ApiError(httpStatus.CONFLICT, "Can't have an income as Buyer");
-  }
-  if (payload.role === "seller" && payload.budget > 0) {
-    throw new ApiError(httpStatus.CONFLICT, "Can't have a budget as seller");
-  }
   const createdUser = await User.create(payload);
   if (!createdUser) {
     throw Error("Failed to create user");
   }
   return createdUser;
 };
-
+const getAllUsers = async () => {
+  const result = await User.find();
+  return result;
+};
+const getSingleUser = async (id: string) => {
+  const result = await User.findOne({ _id: id });
+  return result;
+};
+const deleteSingleUser = async (id: string) => {
+  const result = await User.deleteOne({ _id: id });
+  return result;
+};
+const updateSingleUser = async (id: string, update: IUser) => {
+  const result = await User.updateOne({ _id: id }, update);
+  return result;
+};
 export const UserService = {
   createUser,
+  getAllUsers,
+  getSingleUser,
+  deleteSingleUser,
+  updateSingleUser,
 };
