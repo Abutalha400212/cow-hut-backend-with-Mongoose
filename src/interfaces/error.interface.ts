@@ -3,10 +3,7 @@ export type IResponseErrorMessage = {
   message: string;
 };
 export type IReturnHandleValidationError = {
-  errorMessages: {
-    path: string;
-    message: string;
-  }[];
   statusCode: number;
   message: string;
+  errorMessages: IResponseErrorMessage[];
 };

@@ -41,7 +41,12 @@ const createOrder = async (order: IOrder) => {
   const result = await Order.create(newData);
   return result;
 };
+const getOrders = async () => {
+  const result = await Order.find();
+  return getOrders;
+};
 
 export const OrderService = {
   createOrder,
+  getOrders,
 };

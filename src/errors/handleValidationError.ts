@@ -12,8 +12,8 @@ const handleValidationError = (
       el: mongoose.Error.CastError | mongoose.Error.ValidatorError
     ): IResponseErrorMessage => {
       return {
-        path: el.path,
-        message: el.message,
+        path: el?.path,
+        message: el?.message,
       };
     }
   );
