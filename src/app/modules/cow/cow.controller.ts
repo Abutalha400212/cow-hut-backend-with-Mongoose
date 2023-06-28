@@ -1,94 +1,66 @@
-import { RequestHandler } from "express";
+import { Request, Response } from "express";
 import { CowService } from "./cow.service";
 import httpStatus from "http-status";
 import { filterFields, paginationFields } from "./cow.constant";
 import pick from "../../../shared/pick";
-import ApiError from "../../../errors/apiError";
+import sendResponse from "../../../shared/sendResponse";
+import catchAsync from "../../../shared/catchAsync";
+import { ICow } from "./cow.interface";
 
-const addCow: RequestHandler = async (req, res, next) => {
-  try {
-    const result = await CowService.addCow(req.body);
-    res.status(httpStatus.OK).json({
+const addCow = catchAsync(async (req: Request, res: Response) => {
+  const result = await CowService.addCow(req.body);
+  sendResponse<ICow>(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Cow Added successfully",
+    data: result,
+  });
+});
+const getAllCow = catchAsync(async (req: Request, res: Response) => {
+  const filters = pick(req.query, filterFields);
+  const paginationOtions = pick(req.query, paginationFields);
+  const result = await CowService.getAllCow(filters, paginationOtions);
+  sendResponse<ICow[]>(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Cow data retrived successfully",
+    meta: result.meta,
+    data: result.data,
+  });
+});
+const getSingleCow = catchAsync(async (req: Request, res: Response) => {
+  const id: string = req.params.id;
+  const result = await CowService.getSingleCow(id);
+  if (result) {
+    sendResponse<ICow>(res, {
+      statusCode: httpStatus.OK,
       success: true,
-      message: "Cow is added successfully",
+      message: "Cow data retrived successfully",
       data: result,
     });
-  } catch (error) {
-    next(error);
   }
-};
-const getAllCow: RequestHandler = async (req, res, next) => {
-  try {
-    const filters = pick(req.query, filterFields);
-    const paginationOtions = pick(req.query, paginationFields);
-    const result = await CowService.getAllCow(filters, paginationOtions);
-    res.status(httpStatus.OK).json({
-      success: true,
-      message: "Cows data retrived successfully",
-      meta: result.meta,
-      data: result.data,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-const getSingleCow: RequestHandler = async (req, res, next) => {
-  try {
-    const id: string = req.params.id;
-    if (typeof id !== "string") {
-      throw new ApiError(httpStatus.NOT_FOUND, "Provied Id is not valid");
-    }
-    const result = await CowService.getSingleCow(id);
-    if (result) {
-      res.status(httpStatus.OK).json({
-        success: true,
-        message: "Cows data retrived successfully",
-        data: result,
-      });
-    } else {
-      throw new ApiError(httpStatus.NOT_FOUND, "Data Not found");
-    }
-  } catch (error) {
-    next(error);
-  }
-};
-const deleteSingleCow: RequestHandler = async (req, res, next) => {
-  try {
-    const id: string = req.params.id;
-    if (typeof id !== "string") {
-      throw new ApiError(httpStatus.NOT_FOUND, "Provied Id is not valid");
-    }
-    const result = await CowService.deleteSingleCow(id);
-    if (result.deletedCount > 0) {
-      res.status(httpStatus.OK).json({
-        success: true,
-        message: "Cow is deleted successfully",
-        data: result,
-      });
-    }
-  } catch (error) {
-    next(error);
-  }
-};
-const updateSingleCow: RequestHandler = async (req, res, next) => {
-  try {
-    const id: string = req.params.id;
-    if (typeof id !== "string") {
-      throw new ApiError(httpStatus.NOT_FOUND, "Provied Id is not valid");
-    }
-    const result = await CowService.updateSingleCow(id, req.body);
+});
+const deleteSingleCow = catchAsync(async (req: Request, res: Response) => {
+  const id = req.params.id;
+  const result = await CowService.deleteSingleCow(id);
 
-    if (result.modifiedCount > 0) {
-      res.status(httpStatus.OK).json({
-        success: true,
-        message: "Cow has updeted successfully",
-        data: req.body,
-      });
-    }
-  } catch (error) {
-    next(error);
-  }
-};
+  sendResponse<ICow>(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Cow Deleted successfully",
+    data: result,
+  });
+});
+const updateSingleCow = catchAsync(async (req: Request, res: Response) => {
+  const id = req.params.id;
+  const result = await CowService.updateSingleCow(id, req.body);
+  sendResponse<ICow>(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Cow updated successfully",
+    data: result,
+  });
+});
 
 export const CowController = {
   addCow,

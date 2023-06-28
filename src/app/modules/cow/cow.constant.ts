@@ -38,7 +38,6 @@ export const breeds: IBreed[] = [
   "Kankrej",
 ];
 
-export const paginationFields = ["page", "limit", "sortBy", "sortOrder"];
 export const filterFields = [
   "searchTerm",
   "location",
@@ -49,8 +48,5 @@ export const filterFields = [
   "minPrice",
   "maxPrice",
 ];
-export const academicSemesterSearchableFields = [
-  "location",
-  "breed",
-  "category",
-];
+export const CowSearchableFields = ["location", "breed", "category"];
+export const paginationFields = ["page", "limit", "sortBy", "sortOrder"];

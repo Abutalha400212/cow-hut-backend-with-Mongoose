@@ -1,52 +1,67 @@
-import { ICow } from "../cow/cow.interface";
+import mongoose from "mongoose";
 import { Cow } from "../cow/cow.model";
-import { IUser } from "../user/user.interface";
 import { User } from "../user/user.model";
-import { IOrder } from "./order.interface";
+import { IOrder, IOrderResponse } from "./order.interface";
 import { Order } from "./order.model";
+import ApiError from "../../../errors/apiError";
+import httpStatus from "http-status";
 
-const createOrder = async (order: IOrder) => {
-  let newData = {};
-  const { buyer, cow: cows } = order;
-  const user: IUser | null = await User.findOne({ _id: buyer });
-  const cow: ICow | null = await Cow.findOne({ _id: cows });
-  if (user && cow && user?.budget >= cow?.price) {
-    await User.updateOne(
-      { _id: buyer },
-      { $inc: { budget: -Number(cow?.price) } }
+const createOrder = async (payload: IOrder): Promise<IOrderResponse | null> => {
+  const { cow: cowId, buyer: buyerId } = payload;
+
+  const isBuyer = await User.findOne({ _id: buyerId, role: "buyer" });
+  if (!isBuyer) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Only Buyer can buy a cow");
+  }
+  const isCowExist = await Cow.findById({ _id: cowId });
+  if (!isCowExist) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Cow does not Found");
+  }
+  let result: any = null;
+  const session = await mongoose.startSession();
+
+  try {
+    session.startTransaction();
+    if (isBuyer.budget < isCowExist.price) {
+      throw new ApiError(httpStatus.BAD_GATEWAY, "Insufficient Balance");
+    }
+    await User.findOneAndUpdate(
+      { _id: buyerId },
+      { $inc: { budget: -Number(isCowExist?.price) } },
+      { new: true, session: session }
     );
-    await Cow.updateOne(
-      { _id: cow.seller },
-      {
-        $inc: { income: Number(cow?.price) },
-      }
+    await User.findOneAndUpdate(
+      { _id: isCowExist.seller },
+      { $inc: { income: Number(isCowExist?.price) } },
+      { new: true, session: session }
     );
-    await Cow.updateOne(
-      { _id: cows },
-      {
-        $set: {
-          label: "sold-out",
-        },
-      }
+    if (isCowExist.label === "sold-out") {
+      throw new ApiError(httpStatus.BAD_REQUEST, "This Cow already has sold");
+    }
+    await Cow.findOneAndUpdate(
+      { _id: cowId },
+      { $set: { label: "sold-out" } },
+      { new: true, session: session }
     );
-    newData = {
-      seller: cow?.seller,
-      buyer: buyer,
-      cow: cows,
-    };
-  } else {
-    throw new Error("Insufficient Balance");
+    const createOrder = await Order.create([payload], { session: session });
+    if (!createOrder.length) {
+      throw new ApiError(httpStatus.BAD_REQUEST, "Failed to create a user");
+    }
+    result = createOrder[0];
+    await session.commitTransaction();
+    await session.endSession();
+  } catch (error) {
+    await session.abortTransaction();
+    await session.endSession();
+    throw error;
+  }
+  if (result) {
+    result = await Cow.findOne({ _id: result.cow }).populate("seller");
   }
 
-  const result = await Order.create(newData);
   return result;
-};
-const getOrders = async () => {
-  const result = await Order.find();
-  return getOrders;
 };
 
 export const OrderService = {
   createOrder,
-  getOrders,
 };

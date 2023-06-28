@@ -12,24 +12,8 @@ export type ICow = {
   category: "dairy" | "beef" | "dualPurpose ";
   seller: Types.ObjectId | IUser;
 };
-
-export type IPaginationOptions = {
-  page?: number;
-  limit?: number;
-  sortBy?: string;
-  sortOrder?: "asc" | "desc";
-};
 export type ICowFilter = {
   searchTerm?: string;
   maxPrice?: number;
   minPrice?: number;
-};
-
-export type IGenereicResponse<T> = {
-  meta: {
-    page: number;
-    limit: number;
-    total: number;
-  };
-  data: T;
 };

@@ -10,3 +10,9 @@ export type IUser = {
   budget: number;
   income: number;
 };
+
+export type IUserFilter = {
+  searchTerm?: string;
+  phoneNumber?: string;
+  address?: string;
+};
