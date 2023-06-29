@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 import { UserService } from "./user.service";
 import httpStatus from "http-status";
 import catchAsync from "../../../shared/catchAsync";
@@ -7,17 +7,15 @@ import pick from "../../../shared/pick";
 import { IUser } from "./user.interface";
 import { paginationFields } from "../cow/cow.constant";
 import { UserFilterFields } from "./user.constant";
-const createUser = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const result = await UserService.createUser(req.body);
-    sendResponse<IUser>(res, {
-      statusCode: httpStatus.OK,
-      success: true,
-      message: "User Created successfully",
-      data: result,
-    });
-  }
-);
+const createUser = catchAsync(async (req: Request, res: Response) => {
+  const result = await UserService.createUser(req.body);
+  sendResponse<IUser>(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "User Created successfully",
+    data: result,
+  });
+});
 const getAllUsers = catchAsync(async (req: Request, res: Response) => {
   const filters = pick(req.query, UserFilterFields);
   const paginationOtions = pick(req.query, paginationFields);
@@ -42,7 +40,6 @@ const getSingleUser = catchAsync(async (req: Request, res: Response) => {
 });
 const deleteSingleUser = catchAsync(async (req: Request, res: Response) => {
   const result = await UserService.deleteSingleUser(req.params.id);
-
   sendResponse<IUser>(res, {
     statusCode: httpStatus.OK,
     success: true,

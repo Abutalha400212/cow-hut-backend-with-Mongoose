@@ -1,8 +1,8 @@
-import mongoose, { Schema, model } from "mongoose";
-import { IUser } from "./user.interface";
+import { Schema, model } from "mongoose";
+import { IAdmin } from "./admin.interface";
 import bcrypt from "bcrypt";
 import config from "../../../config";
-const userSchema = new Schema<IUser>(
+const adminSchema = new Schema<IAdmin>(
   {
     password: {
       type: String,
@@ -11,7 +11,7 @@ const userSchema = new Schema<IUser>(
     role: {
       type: String,
       required: true,
-      enum: ["buyer", "seller"],
+      enum: ["admin"],
     },
     name: {
       firstName: String,
@@ -22,15 +22,12 @@ const userSchema = new Schema<IUser>(
       required: true,
     },
     address: String,
-    budget: Number,
-    income: Number,
   },
   {
     timestamps: true,
   }
 );
-
-userSchema.pre("save", async function (next) {
+adminSchema.pre("save", async function (next) {
   const user = this;
   user.password = await bcrypt.hash(
     user.password,
@@ -38,4 +35,4 @@ userSchema.pre("save", async function (next) {
   );
   next();
 });
-export const User = model<IUser>("User", userSchema);
+export const Admin = model<IAdmin>("Admin", adminSchema);
