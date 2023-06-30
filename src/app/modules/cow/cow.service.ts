@@ -1,4 +1,4 @@
-import { ObjectId, SortOrder } from "mongoose";
+import { SortOrder } from "mongoose";
 import { PaginationHelper } from "../../../helpers/paginationHelpers";
 import { ICow, ICowFilter } from "./cow.interface";
 import { Cow } from "./cow.model";

@@ -1,4 +1,4 @@
-import { ObjectId, SortOrder } from "mongoose";
+import { SortOrder } from "mongoose";
 import { PaginationHelper } from "../../../helpers/paginationHelpers";
 import { FilteringHelper } from "../../../helpers/filteringHelpers";
 import {
@@ -7,7 +7,6 @@ import {
 } from "../../../interfaces/common";
 import httpStatus from "http-status";
 import ApiError from "../../../errors/apiError";
-import { User } from "../user/user.model";
 import { IAdmin, IAdminFilter } from "./admin.interface";
 import { Admin } from "./admin.model";
 
@@ -86,6 +85,7 @@ const updateAdmin = async (
   });
   return result;
 };
+
 export const AdminService = {
   createAdmin,
   getSingleAdmin,

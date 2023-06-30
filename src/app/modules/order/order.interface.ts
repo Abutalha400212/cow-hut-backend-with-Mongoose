@@ -5,13 +5,5 @@ import { ICow } from "../cow/cow.interface";
 export type IOrder = {
   cow: Types.ObjectId | ICow;
   buyer: Types.ObjectId | IUser;
-};
-
-export type IOrderResponse = {
-  cowName?: string;
-  sellerName?: string;
-  buyerName?: string;
-  TotalPrice?: string;
-  RemainingBalance?: string;
-  sellerIncome?: number;
+  seller?: Types.ObjectId | IUser;
 };

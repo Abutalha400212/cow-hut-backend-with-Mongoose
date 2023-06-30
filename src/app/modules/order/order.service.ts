@@ -1,15 +1,21 @@
-import mongoose from "mongoose";
+import mongoose, { SortOrder } from "mongoose";
 import { Cow } from "../cow/cow.model";
 import { User } from "../user/user.model";
-import { IOrder, IOrderResponse } from "./order.interface";
+import { IOrder } from "./order.interface";
 import { Order } from "./order.model";
 import ApiError from "../../../errors/apiError";
 import httpStatus from "http-status";
+import { ICow } from "../cow/cow.interface";
+import {
+  IGenereicResponse,
+  IPaginationOptions,
+} from "../../../interfaces/common";
+import { PaginationHelper } from "../../../helpers/paginationHelpers";
 
-const createOrder = async (payload: IOrder): Promise<IOrderResponse | null> => {
+const createOrder = async (payload: IOrder): Promise<ICow | null> => {
   const { cow: cowId, buyer: buyerId } = payload;
 
-  const isBuyer = await User.findOne({ _id: buyerId, role: "buyer" });
+  const isBuyer = await User.findById({ _id: buyerId, role: "buyer" });
   if (!isBuyer) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Only Buyer can buy a cow");
   }
@@ -43,6 +49,7 @@ const createOrder = async (payload: IOrder): Promise<IOrderResponse | null> => {
       { $set: { label: "sold-out" } },
       { new: true, session: session }
     );
+    payload.seller = isCowExist.seller;
     const createOrder = await Order.create([payload], { session: session });
     if (!createOrder.length) {
       throw new ApiError(httpStatus.BAD_REQUEST, "Failed to create a user");
@@ -56,12 +63,52 @@ const createOrder = async (payload: IOrder): Promise<IOrderResponse | null> => {
     throw error;
   }
   if (result) {
-    result = await Cow.findOne({ _id: result.cow }).populate("seller");
+    result = await Order.findById({ _id: result._id })
+      .populate("cow")
+      .populate("seller")
+      .populate("buyer");
   }
 
   return result;
 };
+const getOrders = async (
+  user: any,
+  paginationOtions: IPaginationOptions
+): Promise<IGenereicResponse<IOrder[]>> => {
+  const { _id } = user;
 
+  const { page, limit, sortBy, sortOrder } =
+    PaginationHelper.createPagination(paginationOtions);
+  const skip = (page - 1) * limit;
+  const sortCondition: { [key: string]: SortOrder } = {};
+
+  if (sortBy && sortOrder) {
+    sortCondition[sortBy] = sortOrder;
+  }
+  let condition = {};
+  if (user.role === "admin") {
+    condition = {};
+  } else if (user.role === "buyer") {
+    condition = { buyer: _id };
+  } else if (user.role === "seller") {
+    condition = { seller: _id };
+  }
+  const result = await Order.find(condition)
+    .sort(sortCondition)
+    .skip(skip)
+    .limit(limit);
+
+  const total = await Order.estimatedDocumentCount();
+  return {
+    meta: {
+      page,
+      limit,
+      total,
+    },
+    data: result,
+  };
+};
 export const OrderService = {
   createOrder,
+  getOrders,
 };

@@ -1,12 +1,9 @@
 import { Request, Response } from "express";
-
 import httpStatus from "http-status";
 import catchAsync from "../../../shared/catchAsync";
 import sendResponse from "../../../shared/sendResponse";
 import pick from "../../../shared/pick";
-
 import { paginationFields } from "../cow/cow.constant";
-
 import { AdminService } from "./admin.service";
 import { IAdmin } from "./admin.interface";
 import { AdminFilterFields } from "./admin.constant";

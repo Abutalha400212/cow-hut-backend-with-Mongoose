@@ -8,7 +8,13 @@ import catchAsync from "../../../shared/catchAsync";
 import { ICow } from "./cow.interface";
 
 const addCow = catchAsync(async (req: Request, res: Response) => {
-  const result = await CowService.addCow(req.body);
+  const { ...cowData } = req.body;
+
+  if (req.user) {
+    const { _id } = req.user;
+    cowData.seller = _id;
+  }
+  const result = await CowService.addCow(cowData);
   sendResponse<ICow>(res, {
     statusCode: httpStatus.OK,
     success: true,
