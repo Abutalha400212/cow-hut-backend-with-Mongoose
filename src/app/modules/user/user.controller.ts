@@ -57,10 +57,35 @@ const updateSingleUser = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+const getProfile = catchAsync(async (req: Request, res: Response) => {
+  const token = req.headers.authorization;
+  const result = await UserService.getProfile(token as string);
+  sendResponse<Pick<IUser, "name" | "phoneNumber" | "address">>(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "User's information retrieved successfully",
+    data: result,
+  });
+});
+const updateProfile = catchAsync(async (req: Request, res: Response) => {
+  const { ...userData } = req.body;
+  const token = req.headers.authorization;
+  const result = await UserService.updateProfile(userData, token as string);
+  if (result !== undefined) {
+    sendResponse<Pick<IUser, "name" | "phoneNumber" | "address">>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "User's information updated successfully",
+      data: result,
+    });
+  }
+});
 export const UserController = {
   createUser,
   getAllUsers,
   getSingleUser,
+  updateProfile,
   deleteSingleUser,
   updateSingleUser,
+  getProfile,
 };

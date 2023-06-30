@@ -1,16 +1,16 @@
 import mongoose from "mongoose";
 import httpStatus from "http-status";
 import {
-  IResponseErrorMessage,
-  IReturnHandleValidationError,
+  IGenericErrorMessage,
+  IGenericErrorResponse,
 } from "../interfaces/error.interface";
 const handleValidationError = (
   error: mongoose.Error.ValidationError
-): IReturnHandleValidationError => {
-  const errors: IResponseErrorMessage[] = Object.values(error.errors).map(
+): IGenericErrorResponse => {
+  const errors: IGenericErrorMessage[] = Object.values(error.errors).map(
     (
       el: mongoose.Error.CastError | mongoose.Error.ValidatorError
-    ): IResponseErrorMessage => {
+    ): IGenericErrorMessage => {
       return {
         path: el?.path,
         message: el?.message,

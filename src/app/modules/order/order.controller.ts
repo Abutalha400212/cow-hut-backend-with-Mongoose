@@ -7,13 +7,12 @@ import { ICow } from "../cow/cow.interface";
 import { paginationFields } from "../cow/cow.constant";
 import pick from "../../../shared/pick";
 import { IOrder } from "./order.interface";
-import { IUser } from "../user/user.interface";
 import ApiError from "../../../errors/apiError";
 
 const createOrder = catchAsync(async (req: Request, res: Response) => {
   const { ...orderData } = req.body;
   const result = await OrderService.createOrder(orderData);
-  sendResponse<ICow>(res, {
+  sendResponse<IOrder>(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: "Order Created successfully",
@@ -25,7 +24,7 @@ const getOrders: RequestHandler = catchAsync(
     const paginationOtions = pick(req.query, paginationFields);
     const { ...user } = req?.user;
     const result = await OrderService.getOrders(user, paginationOtions);
-
+    // Check specific User for existed Order
     if (!result.data.length && user.role !== "admin") {
       throw new ApiError(
         httpStatus.BAD_REQUEST,

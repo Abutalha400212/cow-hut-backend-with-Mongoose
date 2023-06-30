@@ -2,6 +2,8 @@ import { Schema, model } from "mongoose";
 import { IUser, UserModel } from "./user.interface";
 import bcrypt from "bcrypt";
 import config from "../../../config";
+import ApiError from "../../../errors/apiError";
+import httpStatus from "http-status";
 
 const userSchema = new Schema<IUser>(
   {
@@ -24,8 +26,8 @@ const userSchema = new Schema<IUser>(
       unique: true,
     },
     address: String,
-    budget: { type: Number, default: 0 },
-    income: { type: Number, default: 0 },
+    budget: Number,
+    income: Number,
   },
   {
     timestamps: true,
@@ -48,6 +50,18 @@ userSchema.statics.isPasswordMatched = async function (
 };
 userSchema.pre("save", async function (next) {
   const user = this;
+  if (user.role === "seller" && (user.budget > 0 || user.income > 0)) {
+    throw new ApiError(
+      httpStatus.NOT_ACCEPTABLE,
+      "Can't be able to add budget/income as a seller"
+    );
+  }
+  if (user.role === "buyer" && user.income > 0) {
+    throw new ApiError(
+      httpStatus.NOT_ACCEPTABLE,
+      "Can't be able to add income as a buyer"
+    );
+  }
   user.password = await bcrypt.hash(
     user.password,
     Number(config.bcrypt_salt_rounds)

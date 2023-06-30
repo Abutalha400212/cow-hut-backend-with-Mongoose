@@ -1,9 +1,9 @@
-export type IResponseErrorMessage = {
+export type IGenericErrorMessage = {
   path: string | number;
   message: string;
 };
-export type IReturnHandleValidationError = {
+export type IGenericErrorResponse = {
   statusCode: number;
   message: string;
-  errorMessages: IResponseErrorMessage[];
+  errorMessages: IGenericErrorMessage[];
 };

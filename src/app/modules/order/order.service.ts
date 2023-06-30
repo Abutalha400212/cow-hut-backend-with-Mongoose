@@ -5,16 +5,14 @@ import { IOrder } from "./order.interface";
 import { Order } from "./order.model";
 import ApiError from "../../../errors/apiError";
 import httpStatus from "http-status";
-import { ICow } from "../cow/cow.interface";
 import {
   IGenereicResponse,
   IPaginationOptions,
 } from "../../../interfaces/common";
 import { PaginationHelper } from "../../../helpers/paginationHelpers";
 
-const createOrder = async (payload: IOrder): Promise<ICow | null> => {
+const createOrder = async (payload: IOrder): Promise<IOrder | null> => {
   const { cow: cowId, buyer: buyerId } = payload;
-
   const isBuyer = await User.findById({ _id: buyerId, role: "buyer" });
   if (!isBuyer) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Only Buyer can buy a cow");

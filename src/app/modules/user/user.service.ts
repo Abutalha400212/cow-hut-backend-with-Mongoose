@@ -9,7 +9,23 @@ import { IUser, IUserFilter } from "./user.interface";
 import { User } from "./user.model";
 import ApiError from "../../../errors/apiError";
 import httpStatus from "http-status";
+import { jwtHelpers } from "../../../helpers/JWT.token";
+import config from "../../../config";
+import { Secret } from "jsonwebtoken";
+import { Admin } from "../admin/admin.model";
 const createUser = async (payload: IUser): Promise<IUser | null> => {
+  if (payload.role === "seller" && (payload.budget > 0 || payload.income > 0)) {
+    throw new ApiError(
+      httpStatus.NOT_ACCEPTABLE,
+      "Can't be able to add budget/income as a seller"
+    );
+  }
+  if (payload.role === "buyer" && payload.income > 0) {
+    throw new ApiError(
+      httpStatus.NOT_ACCEPTABLE,
+      "Can't be able to add income as a buyer"
+    );
+  }
   const createdUser = await User.create(payload);
   return createdUser;
 };
@@ -82,10 +98,80 @@ const updateSingleUser = async (
   });
   return result;
 };
+const getProfile = async (
+  token: string
+): Promise<Pick<IUser, "name" | "phoneNumber" | "address"> | null> => {
+  const { _id, role } = jwtHelpers.verifyToken(
+    token,
+    config.jwt.secret as Secret
+  );
+  let result = null;
+  if (role && role !== "admin") {
+    result = await User.findById(
+      { _id },
+      { name: 1, phoneNumber: 1, address: 1, _id: 0 }
+    );
+  }
+  if (role && role === "admin") {
+    result = await Admin.findById(
+      { _id },
+      { name: 1, phoneNumber: 1, address: 1, _id: 0 }
+    );
+  }
+  return result;
+};
+const updateProfile = async (
+  payload: Partial<IUser>,
+  token: string
+): Promise<
+  Pick<IUser, "name" | "phoneNumber" | "address"> | undefined | null
+> => {
+  const { _id, role } = jwtHelpers.verifyToken(
+    token,
+    config.jwt.secret as Secret
+  );
+  const { name, ...userData } = payload;
+  const updatedData: Partial<IUser> = { ...userData };
+  if (name && Object.keys(name).length > 0) {
+    Object.keys(name).forEach((key) => {
+      const nameKey = `name.${key}` as keyof Partial<IUser>;
+
+      (updatedData as any)[nameKey] = name[key as keyof typeof name];
+    });
+
+    let result = null;
+    if (role && role === "admin") {
+      result = await Admin.findOneAndUpdate({ _id }, updatedData, {
+        projection: {
+          name: true,
+          phoneNumber: true,
+          address: true,
+          _id: false,
+        },
+        new: true,
+      });
+    }
+    if (role && role !== "admin") {
+      result = await User.findOneAndUpdate({ _id }, updatedData, {
+        projection: {
+          name: true,
+          phoneNumber: true,
+          address: true,
+          _id: false,
+        },
+        new: true,
+      });
+    }
+
+    return result;
+  }
+};
 export const UserService = {
   createUser,
   getAllUsers,
   getSingleUser,
   deleteSingleUser,
   updateSingleUser,
+  getProfile,
+  updateProfile,
 };

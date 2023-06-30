@@ -10,3 +10,5 @@ export const UserSearchableFields = [
   "name.lastName",
   "role",
 ];
+
+export const userRole = ["buyer", "seller"];

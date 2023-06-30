@@ -10,3 +10,5 @@ export const AdminFilterFields = [
   "name.lastName",
   "phoneNumber",
 ];
+
+export const adminRole = ["admin"];
