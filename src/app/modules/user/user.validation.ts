@@ -46,8 +46,21 @@ const updateUserZodSchema = z.object({
     budget: z.number().optional(),
   }),
 });
+const updateMyProfileSchema = z.object({
+  body: z.object({
+    phoneNumber: z.string().optional(),
+    name: z
+      .object({
+        firstName: z.string().optional(),
+        lastName: z.string().optional(),
+      })
+      .optional(),
+    address: z.string().optional(),
+  }),
+});
 
 export const UserValidation = {
   createUserZodSchema,
   updateUserZodSchema,
+  updateMyProfileSchema,
 };

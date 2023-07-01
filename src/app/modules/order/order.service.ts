@@ -10,6 +10,8 @@ import {
   IPaginationOptions,
 } from "../../../interfaces/common";
 import { PaginationHelper } from "../../../helpers/paginationHelpers";
+import { IUser } from "../user/user.interface";
+import { IAdmin } from "../admin/admin.interface";
 
 const createOrder = async (payload: IOrder): Promise<IOrder | null> => {
   const { cow: cowId, buyer: buyerId } = payload;
@@ -70,7 +72,7 @@ const createOrder = async (payload: IOrder): Promise<IOrder | null> => {
   return result;
 };
 const getOrders = async (
-  user: any,
+  user: Pick<IUser | IAdmin, "_id" | "phoneNumber" | "role" | "password">,
   paginationOtions: IPaginationOptions
 ): Promise<IGenereicResponse<IOrder[]>> => {
   const { _id } = user;
@@ -106,7 +108,29 @@ const getOrders = async (
     data: result,
   };
 };
+const getSingleOrder = async (
+  id: string,
+  user: Pick<IUser | IAdmin, "_id" | "phoneNumber" | "role" | "password">
+): Promise<IOrder | null> => {
+  const { _id: userId, role } = user;
+  console.log({ userId, role });
+  let condition = {};
+  if (user.role === "admin") {
+    condition = { _id: id };
+  } else if (user.role === "buyer") {
+    condition = { _id: id, buyer: userId };
+  } else if (user.role === "seller") {
+    condition = { _id: id, seller: userId };
+  }
+  const result = await Order.findOne(condition)
+    .populate("cow")
+    .populate("buyer")
+    .populate("seller");
+
+  return result;
+};
 export const OrderService = {
   createOrder,
   getOrders,
+  getSingleOrder,
 };

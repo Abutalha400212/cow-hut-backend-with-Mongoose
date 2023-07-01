@@ -8,6 +8,8 @@ import { paginationFields } from "../cow/cow.constant";
 import pick from "../../../shared/pick";
 import { IOrder } from "./order.interface";
 import ApiError from "../../../errors/apiError";
+import { IUser } from "../user/user.interface";
+import { IAdmin } from "../admin/admin.interface";
 
 const createOrder = catchAsync(async (req: Request, res: Response) => {
   const { ...orderData } = req.body;
@@ -23,7 +25,10 @@ const getOrders: RequestHandler = catchAsync(
   async (req: Request, res: Response) => {
     const paginationOtions = pick(req.query, paginationFields);
     const { ...user } = req?.user;
-    const result = await OrderService.getOrders(user, paginationOtions);
+    const result = await OrderService.getOrders(
+      user as Pick<IUser | IAdmin, "_id" | "phoneNumber" | "role" | "password">,
+      paginationOtions
+    );
     // Check specific User for existed Order
     if (!result.data.length && user.role !== "admin") {
       throw new ApiError(
@@ -43,8 +48,35 @@ const getOrders: RequestHandler = catchAsync(
     });
   }
 );
+const getSingleOrder: RequestHandler = catchAsync(
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { ...user } = req?.user;
+    const result = await OrderService.getSingleOrder(
+      id,
+      user as Pick<IUser | IAdmin, "_id" | "phoneNumber" | "role" | "password">
+    );
+    // Check specific User for existed Order
+    if (!result && user.role !== "admin") {
+      throw new ApiError(
+        httpStatus.BAD_REQUEST,
+        "Your are not a seller/buyer for this order"
+      );
+    }
+    if (!result && user.role === "admin") {
+      throw new ApiError(httpStatus.NOT_FOUND, "Data is not found");
+    }
+    sendResponse<IOrder>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "Order retrived successfully",
+      data: result,
+    });
+  }
+);
 
 export const OrderController = {
   createOrder,
   getOrders,
+  getSingleOrder,
 };

@@ -14,7 +14,11 @@ router.post(
   UserController.createUser
 );
 router.get("/my-profile", UserController.getProfile);
-router.patch("/update-profile", UserController.updateProfile);
+router.patch(
+  "/update-profile",
+  validateRequest(UserValidation.updateMyProfileSchema),
+  UserController.updateProfile
+);
 router.get("/", auth(ENUM_USER_ROLE.ADMIN), UserController.getAllUsers);
 router
   .route("/:id")

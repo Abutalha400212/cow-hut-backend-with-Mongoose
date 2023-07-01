@@ -1,60 +1,55 @@
-# ---------------------Application Routes-------------------------------
+# Live Link: https://example.com
 
-# User ApiRoutes
+# Application Routes
 
-api/v1/auth/signup (POST)
--> Create a new user
-api/v1/users (GET)
--> Get all users
-api/v1/users/64900b40e6a11339ae1ec43a
--> Get a user with its id
-api/v1/users/64900b40e6a11339ae1ec43a (PATCH)
--> Update a user with its id
-api/v1/users/64900b40e6a11339ae1ec43a (DELETE)
--> Delete a user with its id
+# Main part
 
-# Cows ApiRoutes
+Auth (User)
+Route: https://example.com/api/v1/auth/user/login (POST)
+--> User login route
+Route: https://example.com/api/v1/auth/refresh-token (POST)
+---> Token regenerated Route
 
-api/v1/cows (POST)
--> Create a new Cow for sale
-api/v1/cows (GET)
--> get all cows except any condition
-api/v1/cows/648fcba5ca384956d53a67bd (GET)
--> get a single cow details with his seller
-api/v1/cows/648fcba5ca384956d53a67bd (PATCH)
--> update a single cow data
-api/v1/cows/648fcba5ca384956d53a67bd (DELETE)
--> Delete a single cow data
+Auth (Admin)
+Route: https://example.com/api/v1/admin/create-admin (POST)
+---> Create Admin
+Route: https://example.com/api/v1/admin/login (POST)
+---> Login Admin
+Route: https://example.com/api/v1/users (GET)
+----> Only admin can get users
+Route: https://example.com/api/v1/users/6177a5b87d32123f08d2f5d4 (Single GET)
+---> Only admin can get a user
+Route: https://example.com/api/v1/users/6177a5b87d32123f08d2f5d4 (PATCH)
+---> Only admin can update a user
+Route: https://example.com/api/v1/users/6177a5b87d32123f08d2f5d4 (DELETE)
+---> Only admin can delete a user
+Cows
+Route: https://example.com/api/v1/cows/create-cow (POST)
+---> Only seller can Create a cow
+Route: https://example.com/api/v1/cows (GET)
+---> All user can get cows
+Route: https://example.com/api/v1/cows/6177a5b87d32123f08d2f5d4 (Single GET)
+---> All user can get a cow
+Route: https://example.com/api/v1/cows/6177a5b87d32123f08d2f5d4 (PATCH)
+---> Only seller can update a cow
+Route: https://example.com/api/v1/cows/6177a5b87d32123f08d2f5d4 (DELETE)
+---> Only seller can delete a cow
+Orders
+Route: https://example.com/api/v1/orders/create-order (POST)
+---> Only buyer Create an Order
+Route: https://example.com/api/v1/orders (GET)
+---> Order related user and admin can get orders
 
-# ------ data retrive with condition -----
+# Bonus Part
 
-api/v1/cows?page=1&limit=10
-api/v1/cows?sortBy=price&sortOrder=asc
-api/v1/cows?minPrice=20000&maxPrice=70000
-api/v1/cows?location=Chattogram
-api/v1/cows?searchTerm=Cha
-
-# Orders ApiRoutes
-
-api/v1/orders (POST)
-api/v1/orders (GET)
-
-# Live Link
-
-Hosted in Vercel -> [Digital Cow Hut.](https://cow-hut-backend-assignment-eight.vercel.app/)
-
-## Cors
-
-Documentation -> [Cors](https://www.npmjs.com/package/cors)
-
-## Express Js
-
-Hosted in Vercel -> [Express Js](https://expressjs.com/)
-
-## Resourse
-
-MongoDB used as a database -->[mongo DB](https://www.mongodb.com/atlas/database)
-
-## Vercel CLI
-
-Documentation Link -> [Link](https://vercel.com/dashboard)
+Admin
+-Route: https://example.com/api/v1/admin/create-admin (POST)
+---> Create Admin
+My Profile
+Route: https://example.com/api/v1/users/my-profile (GET)
+---> My profile get from req.headers.authorization
+Route: https://example.com/api/v1/users/update-profile (PATCH)
+---> User can update only name,phoneNumber,address.
+Order:
+Route: https://example.com/api/v1/orders/6177a5b87d32123f08d2f5d4 (GET)
+---> This Order related user and admin can get orders
