@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.academicSemesterSearchableFields = exports.filterFields = exports.paginationFields = exports.breeds = exports.divisions = void 0;
+exports.paginationFields = exports.CowSearchableFields = exports.filterFields = exports.breeds = exports.divisions = void 0;
 exports.divisions = [
     "Barisal",
     "Chattogram",
@@ -20,7 +20,6 @@ exports.breeds = [
     "Tharparkar",
     "Kankrej",
 ];
-exports.paginationFields = ["page", "limit", "sortBy", "sortOrder"];
 exports.filterFields = [
     "searchTerm",
     "location",
@@ -31,8 +30,5 @@ exports.filterFields = [
     "minPrice",
     "maxPrice",
 ];
-exports.academicSemesterSearchableFields = [
-    "location",
-    "breed",
-    "category",
-];
+exports.CowSearchableFields = ["location", "breed", "category"];
+exports.paginationFields = ["page", "limit", "sortBy", "sortOrder"];

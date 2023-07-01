@@ -12,13 +12,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.User = void 0;
+exports.Admin = void 0;
 const mongoose_1 = require("mongoose");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const config_1 = __importDefault(require("../../../config"));
-const apiError_1 = __importDefault(require("../../../errors/apiError"));
-const http_status_1 = __importDefault(require("http-status"));
-const userSchema = new mongoose_1.Schema({
+const adminSchema = new mongoose_1.Schema({
     password: {
         type: String,
         required: true,
@@ -26,7 +24,7 @@ const userSchema = new mongoose_1.Schema({
     role: {
         type: String,
         required: true,
-        enum: ["buyer", "seller"],
+        enum: ["admin"],
     },
     name: {
         firstName: String,
@@ -35,35 +33,26 @@ const userSchema = new mongoose_1.Schema({
     phoneNumber: {
         type: String,
         required: true,
-        unique: true,
     },
     address: String,
-    budget: Number,
-    income: Number,
 }, {
     timestamps: true,
 });
-userSchema.statics.isUserExist = function (phoneNumber) {
+adminSchema.statics.isAdminExist = function (phoneNumber) {
     return __awaiter(this, void 0, void 0, function* () {
-        return yield exports.User.findOne({ phoneNumber }, { phoneNumber: 1, password: 1, role: 1 });
+        return yield exports.Admin.findOne({ phoneNumber }, { phoneNumber: 1, password: 1, role: 1, needsPasswordChange: 1 });
     });
 };
-userSchema.statics.isPasswordMatched = function (givenPassword, savedPassword) {
+adminSchema.statics.isPasswordMatched = function (givenPassword, savedPassword) {
     return __awaiter(this, void 0, void 0, function* () {
         return yield bcrypt_1.default.compare(givenPassword, savedPassword);
     });
 };
-userSchema.pre("save", function (next) {
+adminSchema.pre("save", function (next) {
     return __awaiter(this, void 0, void 0, function* () {
         const user = this;
-        if (user.role === "seller" && (user.budget > 0 || user.income > 0)) {
-            throw new apiError_1.default(http_status_1.default.NOT_ACCEPTABLE, "Can't be able to add budget/income as a seller");
-        }
-        if (user.role === "buyer" && user.income > 0) {
-            throw new apiError_1.default(http_status_1.default.NOT_ACCEPTABLE, "Can't be able to add income as a buyer");
-        }
         user.password = yield bcrypt_1.default.hash(user.password, Number(config_1.default.bcrypt_salt_rounds));
         next();
     });
 });
-exports.User = (0, mongoose_1.model)("User", userSchema);
+exports.Admin = (0, mongoose_1.model)("Admin", adminSchema);
