@@ -5,8 +5,9 @@ import sendResponse from "../../../shared/sendResponse";
 import pick from "../../../shared/pick";
 import { paginationFields } from "../cow/cow.constant";
 import { AdminService } from "./admin.service";
-import { IAdmin } from "./admin.interface";
+import { IAdmin, IAuthAdminResponse } from "./admin.interface";
 import { AdminFilterFields } from "./admin.constant";
+import config from "../../../config";
 const createAdmin = catchAsync(async (req: Request, res: Response) => {
   const result = await AdminService.createAdmin(req.body);
   sendResponse<IAdmin>(res, {
@@ -14,6 +15,21 @@ const createAdmin = catchAsync(async (req: Request, res: Response) => {
     success: true,
     message: "Admin Created successfully",
     data: result,
+  });
+});
+const loginAdmin = catchAsync(async (req: Request, res: Response) => {
+  const result = await AdminService.loginAdmin(req.body);
+  const { refreshToken, role, ...others } = result;
+  const cookieOptions = {
+    secure: config.env === "production",
+    httpOnly: true,
+  };
+  res.cookie("refreshToken", refreshToken, cookieOptions);
+  sendResponse<IAuthAdminResponse>(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: `${role} Login successfully`,
+    data: others,
   });
 });
 const getAllAdmin = catchAsync(async (req: Request, res: Response) => {
@@ -63,4 +79,5 @@ export const AdminController = {
   getSingleAdmin,
   deleteSingleAdmin,
   updateSingleAdmin,
+  loginAdmin,
 };

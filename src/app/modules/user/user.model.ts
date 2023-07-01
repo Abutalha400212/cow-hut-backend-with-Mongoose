@@ -56,10 +56,16 @@ userSchema.pre("save", async function (next) {
       "Can't be able to add budget/income as a seller"
     );
   }
-  if (user.role === "buyer" && user.income > 0) {
+  if (user.role === "buyer" && (user.income <= 0 || user.income > 0)) {
     throw new ApiError(
       httpStatus.NOT_ACCEPTABLE,
-      "Can't be able to add income as a buyer"
+      "Can't be able to add income as a buyer."
+    );
+  }
+  if (user.role === "buyer" && user.budget <= 0) {
+    throw new ApiError(
+      httpStatus.NOT_ACCEPTABLE,
+      "Would keep a minimum value of budget as a buyer"
     );
   }
   user.password = await bcrypt.hash(

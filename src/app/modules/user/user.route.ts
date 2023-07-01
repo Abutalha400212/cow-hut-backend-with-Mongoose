@@ -7,12 +7,6 @@ import { UserValidation } from "./user.validation";
 
 const router = express.Router();
 
-router.post(
-  "/create-user",
-  validateRequest(UserValidation.createUserZodSchema),
-  auth(ENUM_USER_ROLE.ADMIN),
-  UserController.createUser
-);
 router.get("/my-profile", UserController.getProfile);
 router.patch(
   "/update-profile",

@@ -7,13 +7,54 @@ import {
 } from "../../../interfaces/common";
 import httpStatus from "http-status";
 import ApiError from "../../../errors/apiError";
-import { IAdmin, IAdminFilter } from "./admin.interface";
+import {
+  IAdmin,
+  IAdminFilter,
+  IAuthAdmin,
+  IAuthAdminResponse,
+} from "./admin.interface";
 import { Admin } from "./admin.model";
+import { jwtHelpers } from "../../../helpers/JWT.token";
+import { Secret } from "jsonwebtoken";
+import config from "../../../config";
 
 const createAdmin = async (payload: IAdmin): Promise<IAdmin> => {
   payload.role = "admin";
   const result = await Admin.create(payload);
   return result;
+};
+const loginAdmin = async (payload: IAuthAdmin): Promise<IAuthAdminResponse> => {
+  const { phoneNumber: contactId, password } = payload;
+  const isAdminExist = await Admin.isAdminExist(contactId);
+  if (!isAdminExist) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Admin does not Found");
+  }
+  const isPasswordMatched = await Admin.isPasswordMatched(
+    password,
+    isAdminExist.password
+  );
+  if (!isPasswordMatched) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, "password is inCorrect");
+  }
+
+  const { phoneNumber, role, _id } = isAdminExist;
+  const accessToken = jwtHelpers.createToken(
+    { phoneNumber, role, _id },
+    config.jwt.secret as Secret,
+    config.jwt.expires_in as string
+  );
+
+  const refreshToken = jwtHelpers.createToken(
+    { phoneNumber, role, _id },
+    config.jwt.refresh_secret as Secret,
+    config.jwt.refresh_expires_in as string
+  );
+
+  return {
+    accessToken,
+    role,
+    refreshToken,
+  };
 };
 const getAllAdmin = async (
   filters: IAdminFilter,
@@ -92,4 +133,5 @@ export const AdminService = {
   getAllAdmin,
   updateAdmin,
   deleteAdmin,
+  loginAdmin,
 };

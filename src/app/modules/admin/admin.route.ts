@@ -10,6 +10,11 @@ router.post(
   validateRequest(AdminValidation.createAdminZodSchema),
   AdminController.createAdmin
 );
+router.post(
+  "/login",
+  validateRequest(AdminValidation.loginAdminZodSchema),
+  AdminController.loginAdmin
+);
 
 router.get("/", AdminController.getAllAdmin);
 router

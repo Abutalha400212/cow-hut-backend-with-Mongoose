@@ -5,7 +5,7 @@
 # Main part
 
 Auth (User)
-Route: https://cow-hut-backend-assignment-eight.vercel.app/api/v1/auth/user/login (POST)
+Route: https://cow-hut-backend-assignment-eight.vercel.app/api/v1/auth/login (POST)
 --> User login route
 Route: https://cow-hut-backend-assignment-eight.vercel.app/api/v1/auth/refresh-token (POST)
 ---> Token regenerated Route
@@ -13,12 +13,14 @@ Route: https://cow-hut-backend-assignment-eight.vercel.app/api/v1/auth/refresh-t
 Auth (Admin)
 Route: https://cow-hut-backend-assignment-eight.vercel.app/api/v1/admin/create-admin (POST)
 ---> Create Admin
-Route: https://cow-hut-backend-assignment-eight.vercel.app/api/v1/admin (POST)
----> Get Admin
 Route: https://cow-hut-backend-assignment-eight.vercel.app/api/v1/admin/login (POST)
 ---> Login Admin
-Route: https://cow-hut-backend-assignment-eight.vercel.app/api/v1/user/login (POST)
----> User Admin
+Route: https://cow-hut-backend-assignment-eight.vercel.app/api/v1/admin (GET)
+---> Get Admin
+Route: https://cow-hut-backend-assignment-eight.vercel.app/api/v1/admin/649d3a58bfd1949e3599a5e8 (GET SINGLE)
+---> Get single admin
+
+Users
 Route: https://cow-hut-backend-assignment-eight.vercel.app/api/v1/users (GET)
 ----> Only admin can get users
 Route: https://cow-hut-backend-assignment-eight.vercel.app/api/v1/users/649e31843dadb8c607e378a3 (Single GET)
@@ -27,6 +29,7 @@ Route: https://cow-hut-backend-assignment-eight.vercel.app/api/v1/users/649e3184
 ---> Only admin can update a user
 Route: https://cow-hut-backend-assignment-eight.vercel.app/api/v1/users/649e31843dadb8c607e378a3 (DELETE)
 ---> Only admin can delete a user
+
 Cows
 Route: https://cow-hut-backend-assignment-eight.vercel.app/api/v1/cows/create-cow (POST)
 ---> Only seller can Create a cow
@@ -49,12 +52,14 @@ Route: https://cow-hut-backend-assignment-eight.vercel.app/api/v1/orders (GET)
 Admin
 -Route: https://cow-hut-backend-assignment-eight.vercel.app/api/v1/admin/create-admin (POST)
 ---> Create Admin
+
 My Profile
 Route: https://cow-hut-backend-assignment-eight.vercel.app/api/v1/users/my-profile (GET)
 ---> My profile get from req.headers.authorization
 Route: https://cow-hut-backend-assignment-eight.vercel.app/api/v1/users/update-profile (PATCH)
 ---> User can update only name,phoneNumber,address.
-Order:
+
+Order
 Route: https://cow-hut-backend-assignment-eight.vercel.app/api/v1/orders/649e4e6ae2f9df86751d3251 (GET)
 ---> This Order related user and admin can get orders
 

@@ -36,8 +36,19 @@ const updateAdminZodSchema = z.object({
     address: z.string().optional(),
   }),
 });
+const loginAdminZodSchema = z.object({
+  body: z.object({
+    password: z.string({
+      required_error: "Password is required",
+    }),
+    phoneNumber: z.string({
+      required_error: "PhoneNumber is required",
+    }),
+  }),
+});
 
 export const AdminValidation = {
   createAdminZodSchema,
   updateAdminZodSchema,
+  loginAdminZodSchema,
 };

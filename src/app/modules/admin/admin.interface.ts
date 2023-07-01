@@ -25,3 +25,13 @@ export type IAdminFilter = {
   phoneNumber?: string;
   address?: string;
 };
+
+export type IAuthAdmin = {
+  phoneNumber: string;
+  password: string;
+};
+export type IAuthAdminResponse = {
+  accessToken: string;
+  role?: string;
+  refreshToken?: string;
+};

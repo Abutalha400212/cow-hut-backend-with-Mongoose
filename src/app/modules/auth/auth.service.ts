@@ -10,38 +10,11 @@ import { Secret } from "jsonwebtoken";
 import { jwtHelpers } from "../../../helpers/JWT.token";
 import { Admin } from "../admin/admin.model";
 import { User } from "../user/user.model";
-const loginAdmin = async (payload: IAuth): Promise<IAuthUserResponse> => {
-  const { phoneNumber: contactId, password } = payload;
-  const isAdminExist = await Admin.isAdminExist(contactId);
-  if (!isAdminExist) {
-    throw new ApiError(httpStatus.NOT_FOUND, "Admin does not Found");
-  }
-  const isPasswordMatched = await Admin.isPasswordMatched(
-    password,
-    isAdminExist.password
-  );
-  if (!isPasswordMatched) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, "password is inCorrect");
-  }
+import { IUser } from "../user/user.interface";
 
-  const { phoneNumber, role, _id } = isAdminExist;
-  const accessToken = jwtHelpers.createToken(
-    { phoneNumber, role, _id },
-    config.jwt.secret as Secret,
-    config.jwt.expires_in as string
-  );
-
-  const refreshToken = jwtHelpers.createToken(
-    { phoneNumber, role, _id },
-    config.jwt.refresh_secret as Secret,
-    config.jwt.refresh_expires_in as string
-  );
-
-  return {
-    accessToken,
-    role,
-    refreshToken,
-  };
+const createUser = async (payload: IUser): Promise<IUser | null> => {
+  const createdUser = await User.create(payload);
+  return createdUser;
 };
 const loginUser = async (payload: IAuth): Promise<IAuthUserResponse> => {
   const { phoneNumber: contactId, password } = payload;
@@ -112,7 +85,7 @@ const refreshToken = async (token: string): Promise<IRefreshTokenResponse> => {
   };
 };
 export const AuthService = {
-  loginAdmin,
   loginUser,
   refreshToken,
+  createUser,
 };

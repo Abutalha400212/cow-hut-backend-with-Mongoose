@@ -5,20 +5,14 @@ import sendResponse from "../../../shared/sendResponse";
 import { IAuthUserResponse, IRefreshTokenResponse } from "./auth.interface";
 import httpStatus from "http-status";
 import config from "../../../config";
-
-const loginAdmin = catchAsync(async (req: Request, res: Response) => {
-  const result = await AuthService.loginAdmin(req.body);
-  const { refreshToken, role, ...others } = result;
-  const cookieOptions = {
-    secure: config.env === "production",
-    httpOnly: true,
-  };
-  res.cookie("refreshToken", refreshToken, cookieOptions);
-  sendResponse<IAuthUserResponse>(res, {
+import { IUser } from "../user/user.interface";
+const createUser = catchAsync(async (req: Request, res: Response) => {
+  const result = await AuthService.createUser(req.body);
+  sendResponse<IUser>(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: `${role} Login successfully`,
-    data: others,
+    message: `${result?.role} sign-up successsully`,
+    data: result,
   });
 });
 const loginUser = catchAsync(async (req: Request, res: Response) => {
@@ -53,7 +47,7 @@ const refreshToken = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const AuthController = {
-  loginAdmin,
+  createUser,
   loginUser,
   refreshToken,
 };

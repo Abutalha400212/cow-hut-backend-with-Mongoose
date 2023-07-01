@@ -13,22 +13,6 @@ import { jwtHelpers } from "../../../helpers/JWT.token";
 import config from "../../../config";
 import { Secret } from "jsonwebtoken";
 import { Admin } from "../admin/admin.model";
-const createUser = async (payload: IUser): Promise<IUser | null> => {
-  if (payload.role === "seller" && (payload.budget > 0 || payload.income > 0)) {
-    throw new ApiError(
-      httpStatus.NOT_ACCEPTABLE,
-      "Can't be able to add budget/income as a seller"
-    );
-  }
-  if (payload.role === "buyer" && payload.income > 0) {
-    throw new ApiError(
-      httpStatus.NOT_ACCEPTABLE,
-      "Can't be able to add income as a buyer"
-    );
-  }
-  const createdUser = await User.create(payload);
-  return createdUser;
-};
 const getAllUsers = async (
   filters: IUserFilter,
   paginationOtions: IPaginationOptions
@@ -105,19 +89,15 @@ const getProfile = async (
     token,
     config.jwt.secret as Secret
   );
-  let result = null;
-  if (role && role !== "admin") {
-    result = await User.findById(
-      { _id },
-      { name: 1, phoneNumber: 1, address: 1, _id: 0 }
-    );
-  }
   if (role && role === "admin") {
-    result = await Admin.findById(
-      { _id },
-      { name: 1, phoneNumber: 1, address: 1, _id: 0 }
-    );
+    throw new ApiError(httpStatus.UNAUTHORIZED, "You can't see admin profile");
   }
+
+  const result = await User.findById(
+    { _id },
+    { name: 1, phoneNumber: 1, address: 1, _id: 0 }
+  );
+
   return result;
 };
 const updateProfile = async (
@@ -139,35 +119,27 @@ const updateProfile = async (
       (updatedData as any)[nameKey] = name[key as keyof typeof name];
     });
 
-    let result = null;
     if (role && role === "admin") {
-      result = await Admin.findOneAndUpdate({ _id }, updatedData, {
-        projection: {
-          name: true,
-          phoneNumber: true,
-          address: true,
-          _id: false,
-        },
-        new: true,
-      });
+      throw new ApiError(
+        httpStatus.UNAUTHORIZED,
+        "You can't update an admin profile"
+      );
     }
-    if (role && role !== "admin") {
-      result = await User.findOneAndUpdate({ _id }, updatedData, {
-        projection: {
-          name: true,
-          phoneNumber: true,
-          address: true,
-          _id: false,
-        },
-        new: true,
-      });
-    }
+
+    const result = await User.findOneAndUpdate({ _id }, updatedData, {
+      projection: {
+        name: true,
+        phoneNumber: true,
+        address: true,
+        _id: false,
+      },
+      new: true,
+    });
 
     return result;
   }
 };
 export const UserService = {
-  createUser,
   getAllUsers,
   getSingleUser,
   deleteSingleUser,
