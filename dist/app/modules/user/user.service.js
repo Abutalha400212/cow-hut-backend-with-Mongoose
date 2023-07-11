@@ -31,17 +31,6 @@ const apiError_1 = __importDefault(require("../../../errors/apiError"));
 const http_status_1 = __importDefault(require("http-status"));
 const JWT_token_1 = require("../../../helpers/JWT.token");
 const config_1 = __importDefault(require("../../../config"));
-const admin_model_1 = require("../admin/admin.model");
-const createUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    if (payload.role === "seller" && (payload.budget > 0 || payload.income > 0)) {
-        throw new apiError_1.default(http_status_1.default.NOT_ACCEPTABLE, "Can't be able to add budget/income as a seller");
-    }
-    if (payload.role === "buyer" && payload.income > 0) {
-        throw new apiError_1.default(http_status_1.default.NOT_ACCEPTABLE, "Can't be able to add income as a buyer");
-    }
-    const createdUser = yield user_model_1.User.create(payload);
-    return createdUser;
-});
 const getAllUsers = (filters, paginationOtions) => __awaiter(void 0, void 0, void 0, function* () {
     const { page, limit, sortBy, sortOrder } = paginationHelpers_1.PaginationHelper.createPagination(paginationOtions);
     const skip = (page - 1) * limit;
@@ -101,13 +90,10 @@ const updateSingleUser = (id, payload) => __awaiter(void 0, void 0, void 0, func
 });
 const getProfile = (token) => __awaiter(void 0, void 0, void 0, function* () {
     const { _id, role } = JWT_token_1.jwtHelpers.verifyToken(token, config_1.default.jwt.secret);
-    let result = null;
-    if (role && role !== "admin") {
-        result = yield user_model_1.User.findById({ _id }, { name: 1, phoneNumber: 1, address: 1, _id: 0 });
-    }
     if (role && role === "admin") {
-        result = yield admin_model_1.Admin.findById({ _id }, { name: 1, phoneNumber: 1, address: 1, _id: 0 });
+        throw new apiError_1.default(http_status_1.default.UNAUTHORIZED, "You can't see admin profile");
     }
+    const result = yield user_model_1.User.findById({ _id }, { name: 1, phoneNumber: 1, address: 1, _id: 0 });
     return result;
 });
 const updateProfile = (payload, token) => __awaiter(void 0, void 0, void 0, function* () {
@@ -119,34 +105,22 @@ const updateProfile = (payload, token) => __awaiter(void 0, void 0, void 0, func
             const nameKey = `name.${key}`;
             updatedData[nameKey] = name[key];
         });
-        let result = null;
         if (role && role === "admin") {
-            result = yield admin_model_1.Admin.findOneAndUpdate({ _id }, updatedData, {
-                projection: {
-                    name: true,
-                    phoneNumber: true,
-                    address: true,
-                    _id: false,
-                },
-                new: true,
-            });
+            throw new apiError_1.default(http_status_1.default.UNAUTHORIZED, "You can't update an admin profile");
         }
-        if (role && role !== "admin") {
-            result = yield user_model_1.User.findOneAndUpdate({ _id }, updatedData, {
-                projection: {
-                    name: true,
-                    phoneNumber: true,
-                    address: true,
-                    _id: false,
-                },
-                new: true,
-            });
-        }
+        const result = yield user_model_1.User.findOneAndUpdate({ _id }, updatedData, {
+            projection: {
+                name: true,
+                phoneNumber: true,
+                address: true,
+                _id: false,
+            },
+            new: true,
+        });
         return result;
     }
 });
 exports.UserService = {
-    createUser,
     getAllUsers,
     getSingleUser,
     deleteSingleUser,

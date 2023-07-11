@@ -19,24 +19,9 @@ const config_1 = __importDefault(require("../../../config"));
 const JWT_token_1 = require("../../../helpers/JWT.token");
 const admin_model_1 = require("../admin/admin.model");
 const user_model_1 = require("../user/user.model");
-const loginAdmin = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const { phoneNumber: contactId, password } = payload;
-    const isAdminExist = yield admin_model_1.Admin.isAdminExist(contactId);
-    if (!isAdminExist) {
-        throw new apiError_1.default(http_status_1.default.NOT_FOUND, "Admin does not Found");
-    }
-    const isPasswordMatched = yield admin_model_1.Admin.isPasswordMatched(password, isAdminExist.password);
-    if (!isPasswordMatched) {
-        throw new apiError_1.default(http_status_1.default.UNAUTHORIZED, "password is inCorrect");
-    }
-    const { phoneNumber, role, _id } = isAdminExist;
-    const accessToken = JWT_token_1.jwtHelpers.createToken({ phoneNumber, role, _id }, config_1.default.jwt.secret, config_1.default.jwt.expires_in);
-    const refreshToken = JWT_token_1.jwtHelpers.createToken({ phoneNumber, role, _id }, config_1.default.jwt.refresh_secret, config_1.default.jwt.refresh_expires_in);
-    return {
-        accessToken,
-        role,
-        refreshToken,
-    };
+const createUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+    const createdUser = yield user_model_1.User.create(payload);
+    return createdUser;
 });
 const loginUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const { phoneNumber: contactId, password } = payload;
@@ -85,7 +70,7 @@ const refreshToken = (token) => __awaiter(void 0, void 0, void 0, function* () {
     };
 });
 exports.AuthService = {
-    loginAdmin,
     loginUser,
     refreshToken,
+    createUser,
 };

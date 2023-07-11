@@ -29,10 +29,31 @@ const filteringHelpers_1 = require("../../../helpers/filteringHelpers");
 const http_status_1 = __importDefault(require("http-status"));
 const apiError_1 = __importDefault(require("../../../errors/apiError"));
 const admin_model_1 = require("./admin.model");
+const JWT_token_1 = require("../../../helpers/JWT.token");
+const config_1 = __importDefault(require("../../../config"));
 const createAdmin = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     payload.role = "admin";
     const result = yield admin_model_1.Admin.create(payload);
     return result;
+});
+const loginAdmin = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+    const { phoneNumber: contactId, password } = payload;
+    const isAdminExist = yield admin_model_1.Admin.isAdminExist(contactId);
+    if (!isAdminExist) {
+        throw new apiError_1.default(http_status_1.default.NOT_FOUND, "Admin does not Found");
+    }
+    const isPasswordMatched = yield admin_model_1.Admin.isPasswordMatched(password, isAdminExist.password);
+    if (!isPasswordMatched) {
+        throw new apiError_1.default(http_status_1.default.UNAUTHORIZED, "password is inCorrect");
+    }
+    const { phoneNumber, role, _id } = isAdminExist;
+    const accessToken = JWT_token_1.jwtHelpers.createToken({ phoneNumber, role, _id }, config_1.default.jwt.secret, config_1.default.jwt.expires_in);
+    const refreshToken = JWT_token_1.jwtHelpers.createToken({ phoneNumber, role, _id }, config_1.default.jwt.refresh_secret, config_1.default.jwt.refresh_expires_in);
+    return {
+        accessToken,
+        role,
+        refreshToken,
+    };
 });
 const getAllAdmin = (filters, paginationOtions) => __awaiter(void 0, void 0, void 0, function* () {
     const { page, limit, sortBy, sortOrder } = paginationHelpers_1.PaginationHelper.createPagination(paginationOtions);
@@ -97,4 +118,5 @@ exports.AdminService = {
     getAllAdmin,
     updateAdmin,
     deleteAdmin,
+    loginAdmin,
 };

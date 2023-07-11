@@ -42,7 +42,18 @@ const updateAdminZodSchema = zod_1.default.object({
         address: zod_1.default.string().optional(),
     }),
 });
+const loginAdminZodSchema = zod_1.default.object({
+    body: zod_1.default.object({
+        password: zod_1.default.string({
+            required_error: "Password is required",
+        }),
+        phoneNumber: zod_1.default.string({
+            required_error: "PhoneNumber is required",
+        }),
+    }),
+});
 exports.AdminValidation = {
     createAdminZodSchema,
     updateAdminZodSchema,
+    loginAdminZodSchema,
 };

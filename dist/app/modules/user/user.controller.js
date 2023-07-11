@@ -31,15 +31,6 @@ const sendResponse_1 = __importDefault(require("../../../shared/sendResponse"));
 const pick_1 = __importDefault(require("../../../shared/pick"));
 const cow_constant_1 = require("../cow/cow.constant");
 const user_constant_1 = require("./user.constant");
-const createUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield user_service_1.UserService.createUser(req.body);
-    (0, sendResponse_1.default)(res, {
-        statusCode: http_status_1.default.OK,
-        success: true,
-        message: "User Created successfully",
-        data: result,
-    });
-}));
 const getAllUsers = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const filters = (0, pick_1.default)(req.query, user_constant_1.UserFilterFields);
     const paginationOtions = (0, pick_1.default)(req.query, cow_constant_1.paginationFields);
@@ -103,7 +94,6 @@ const updateProfile = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, 
     }
 }));
 exports.UserController = {
-    createUser,
     getAllUsers,
     getSingleUser,
     updateProfile,

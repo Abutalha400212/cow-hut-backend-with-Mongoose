@@ -29,19 +29,13 @@ const auth_service_1 = require("./auth.service");
 const sendResponse_1 = __importDefault(require("../../../shared/sendResponse"));
 const http_status_1 = __importDefault(require("http-status"));
 const config_1 = __importDefault(require("../../../config"));
-const loginAdmin = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield auth_service_1.AuthService.loginAdmin(req.body);
-    const { refreshToken, role } = result, others = __rest(result, ["refreshToken", "role"]);
-    const cookieOptions = {
-        secure: config_1.default.env === "production",
-        httpOnly: true,
-    };
-    res.cookie("refreshToken", refreshToken, cookieOptions);
+const createUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield auth_service_1.AuthService.createUser(req.body);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
-        message: `${role} Login successfully`,
-        data: others,
+        message: `${result === null || result === void 0 ? void 0 : result.role} sign-up successsully`,
+        data: result,
     });
 }));
 const loginUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -75,7 +69,7 @@ const refreshToken = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, v
     });
 }));
 exports.AuthController = {
-    loginAdmin,
+    createUser,
     loginUser,
     refreshToken,
 };

@@ -59,8 +59,11 @@ userSchema.pre("save", function (next) {
         if (user.role === "seller" && (user.budget > 0 || user.income > 0)) {
             throw new apiError_1.default(http_status_1.default.NOT_ACCEPTABLE, "Can't be able to add budget/income as a seller");
         }
-        if (user.role === "buyer" && user.income > 0) {
-            throw new apiError_1.default(http_status_1.default.NOT_ACCEPTABLE, "Can't be able to add income as a buyer");
+        if (user.role === "buyer" && (user.income <= 0 || user.income > 0)) {
+            throw new apiError_1.default(http_status_1.default.NOT_ACCEPTABLE, "Can't be able to add income as a buyer.");
+        }
+        if (user.role === "buyer" && user.budget <= 0) {
+            throw new apiError_1.default(http_status_1.default.NOT_ACCEPTABLE, "Would keep a minimum value of budget as a buyer");
         }
         user.password = yield bcrypt_1.default.hash(user.password, Number(config_1.default.bcrypt_salt_rounds));
         next();

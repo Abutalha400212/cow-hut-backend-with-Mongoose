@@ -10,6 +10,7 @@ const validateRequest_1 = __importDefault(require("../../../middleware/validateR
 const admin_validation_1 = require("./admin.validation");
 const router = express_1.default.Router();
 router.post("/create-admin", (0, validateRequest_1.default)(admin_validation_1.AdminValidation.createAdminZodSchema), admin_controller_1.AdminController.createAdmin);
+router.post("/login", (0, validateRequest_1.default)(admin_validation_1.AdminValidation.loginAdminZodSchema), admin_controller_1.AdminController.loginAdmin);
 router.get("/", admin_controller_1.AdminController.getAllAdmin);
 router
     .route("/:id")
