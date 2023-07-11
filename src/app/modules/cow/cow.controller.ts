@@ -9,7 +9,6 @@ import { ICow } from "./cow.interface";
 
 const addCow = catchAsync(async (req: Request, res: Response) => {
   const { ...cowData } = req.body;
-
   if (req.user) {
     const { _id } = req.user;
     cowData.seller = _id;
@@ -49,7 +48,6 @@ const getSingleCow = catchAsync(async (req: Request, res: Response) => {
 const deleteSingleCow = catchAsync(async (req: Request, res: Response) => {
   const id = req.params.id;
   const result = await CowService.deleteSingleCow(id);
-
   sendResponse<ICow>(res, {
     statusCode: httpStatus.OK,
     success: true,

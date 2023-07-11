@@ -12,7 +12,7 @@ https://cow-hut-backend-assignment-eight.vercel.app
 
 #### Auth (User)
 
-```http
+```bash
 https://cow-hut-backend-assignment-eight.vercel.app/api/v1/auth/login (POST)
 https://cow-hut-backend-assignment-eight.vercel.app/api/v1/auth/signup (POST)
 https://cow-hut-backend-assignment-eight.vercel.app/api/v1/auth/refresh-token (POST)
@@ -20,14 +20,14 @@ https://cow-hut-backend-assignment-eight.vercel.app/api/v1/auth/refresh-token (P
 
 #### Auth (Admin)
 
-```http
+```bash
 https://cow-hut-backend-assignment-eight.vercel.app/api/v1/admins/create-admin (POST)
 https://cow-hut-backend-assignment-eight.vercel.app/api/v1/admins/login (POST)
 ```
 
 #### User
 
-```http
+```bash
 https://cow-hut-backend-assignment-eight.vercel.app/api/v1/users (GET)
 https://cow-hut-backend-assignment-eight.vercel.app/api/v1/users/649e31843dadb8c607e378a3 (Single GET)
 https://cow-hut-backend-assignment-eight.vercel.app/api/v1/users/649e31843dadb8c607e378a3 (PATCH)
@@ -36,7 +36,7 @@ https://cow-hut-backend-assignment-eight.vercel.app/api/v1/users/649e31843dadb8c
 
 #### Cow
 
-```http
+```bash
 https://cow-hut-backend-assignment-eight.vercel.app/api/v1/cows/create-cow (POST)
 https://cow-hut-backend-assignment-eight.vercel.app/api/v1/cows (GET)
 https://cow-hut-backend-assignment-eight.vercel.app/api/v1/cows/649ec429186c6379c558cfda (Single GET)
@@ -47,7 +47,7 @@ https://cow-hut-backend-assignment-eight.vercel.app/api/v1/cows/649ec429186c6379
 
 #### Order
 
-```http
+```bash
 https://cow-hut-backend-assignment-eight.vercel.app/api/v1/orders/create-order (POST)
 https://cow-hut-backend-assignment-eight.vercel.app/api/v1/orders (GET)
 ```
@@ -56,19 +56,19 @@ https://cow-hut-backend-assignment-eight.vercel.app/api/v1/orders (GET)
 
 #### Admin
 
-```http
+```bash
 https://cow-hut-backend-assignment-eight.vercel.app/api/v1/admin/create-admin (POST)
 ```
 
 #### My Profile
 
-```http
+```bash
 https://cow-hut-backend-assignment-eight.vercel.app/api/v1/users/my-profile (GET)
 https://cow-hut-backend-assignment-eight.vercel.app/api/v1/users/update-profile (PATCH)
 ```
 
 #### Order
 
-```http
+```bash
 https://cow-hut-backend-assignment-eight.vercel.app/api/v1/orders/649e4e6ae2f9df86751d3251 (GET)
 ```
