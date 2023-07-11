@@ -20,7 +20,7 @@ const moduleRoutes = [
         route: cow_route_1.CowRoutes,
     },
     {
-        path: "/admin",
+        path: "/admins",
         route: admin_route_1.AdminRoutes,
     },
     {
